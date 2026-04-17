@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fretes Enterprise</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">Enterprise</div>
+        <h1>Fretes Enterprise</h1>
+        <p>Análise logística e rentabilidade de fretes</p>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="pedidos">Pedidos</button>
+        <button class="nav-btn" data-tab="transportadoras">Transportadoras</button>
+        <button class="nav-btn" data-tab="marketplaces">Marketplaces / UF</button>
+        <button class="nav-btn" data-tab="qualidade">Qualidade de Dados</button>
+      </nav>
+      <div class="sidebar-alert">
+        <h3>Alertas</h3>
+        <ul id="sidebarAlerts"></ul>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="hero">
+        <div>
+          <span class="hero-tag">Sistema pronto para Cloudflare</span>
+          <h2>Painel Executivo de Rentabilidade Logística</h2>
+          <p>Modelo pronto para apresentação comercial, com leitura de lucro, prejuízo, divergência, reentrega e devolução.</p>
+        </div>
+        <div class="hero-actions">
+          <button id="exportCsvBtn" class="btn btn-secondary">Exportar CSV</button>
+          <button class="btn btn-primary">Compartilhar Relatório</button>
+        </div>
+      </header>
+
+      <section class="filters card">
+        <div class="filters-grid">
+          <select id="filterMarketplace"></select>
+          <select id="filterTransportadora"></select>
+          <select id="filterUf"></select>
+          <select id="filterTipo"></select>
+        </div>
+      </section>
+
+      <section id="tab-dashboard" class="tab active">
+        <div class="kpi-grid">
+          <div class="kpi card"><span>Receita de Frete</span><strong id="kpiReceita">R$ 0,00</strong><small>Valor pago pelo cliente</small></div>
+          <div class="kpi card"><span>Custo Logístico</span><strong id="kpiCusto">R$ 0,00</strong><small>Valor cobrado pela transportadora</small></div>
+          <div class="kpi card"><span>Resultado</span><strong id="kpiResultado">R$ 0,00</strong><small id="kpiMargem">Margem de 0,0%</small></div>
+          <div class="kpi card"><span>Pedidos com Prejuízo</span><strong id="kpiPrejuizo">0,0%</strong><small id="kpiPedidosNegativos">0 pedidos negativos</small></div>
+          <div class="kpi card"><span>Divergência Total</span><strong id="kpiDivergencia">R$ 0,00</strong><small>Indicador de auditoria</small></div>
+          <div class="kpi card"><span>Devoluções + Reentregas</span><strong id="kpiOcorrencias">R$ 0,00</strong><small>Custos extraordinários</small></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Resumo Executivo</h3><span class="pill success">Operação em análise</span></div>
+            <div class="summary-grid">
+              <div class="summary-box"><h4>Veredito</h4><p id="vereditoText"></p></div>
+              <div class="summary-box"><h4>Maior foco de atenção</h4><p id="maiorOfensorText"></p></div>
+              <div class="summary-box"><h4>Principal estado crítico</h4><p id="estadoCriticoText"></p></div>
+              <div class="summary-box"><h4>Leitura estratégica</h4><p id="estrategiaText"></p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Pontos Críticos</h3><span class="pill warning">Atenção</span></div>
+            <div id="criticalList" class="stack-list"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card"><div class="card-header"><h3>Rentabilidade por Transportadora</h3></div><div id="transportadoraBars" class="bars"></div></div>
+          <div class="card"><div class="card-header"><h3>Resultado por UF</h3></div><div id="ufBars" class="bars"></div></div>
+        </div>
+      </section>
+
+      <section id="tab-pedidos" class="tab">
+        <div class="card">
+          <div class="card-header"><h3>Pedidos Analíticos</h3><span class="pill">Lucro ou prejuízo por linha</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Transportadora</th><th>Marketplace</th><th>UF</th><th>Tipo</th><th>Custo</th><th>Cliente</th><th>Divergência</th><th>Resultado</th></tr></thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-transportadoras" class="tab">
+        <div class="card">
+          <div class="card-header"><h3>Performance por Transportadora</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Transportadora</th><th>Receita</th><th>Custo</th><th>Resultado</th><th>Margem</th><th>% Prejuízo</th></tr></thead>
+              <tbody id="transportadorasTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-marketplaces" class="tab">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Resultado por Marketplace</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Marketplace</th><th>Receita</th><th>Custo</th><th>Resultado</th><th>Margem</th></tr></thead>
+                <tbody id="marketplacesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Resultado por UF</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>UF</th><th>Receita</th><th>Custo</th><th>Resultado</th><th>Margem</th></tr></thead>
+                <tbody id="ufsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-qualidade" class="tab">
+        <div class="three-col">
+          <div class="card stat-card"><h3>Marketplaces inválidos</h3><strong id="invalidMarketplace">0</strong><small>Registros com 0 ou #N/A</small></div>
+          <div class="card stat-card"><h3>UFs inválidas</h3><strong id="invalidUf">0</strong><small>Registros com UF ausente ou inválida</small></div>
+          <div class="card stat-card"><h3>Registros incompletos</h3><strong id="incompleteRows">0</strong><small>Sem custo ou sem valor pago</small></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Recomendações de Governança</h3></div>
+          <div class="stack-list">
+            <div class="alert-box">Bloquear marketplaces inválidos no fluxo de importação.</div>
+            <div class="alert-box">Validar UF, custo logístico e valor pago pelo cliente antes da consolidação.</div>
+            <div class="alert-box">Separar devolução e reentrega como KPI executivo mensal.</div>
+            <div class="alert-box">Revisar política comercial em rotas e parceiros com prejuízo recorrente.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
